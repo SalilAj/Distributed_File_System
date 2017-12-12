@@ -31,6 +31,12 @@ class ThreadHandler(threading.Thread):
 		self.server=server
 		self.messageHandler=server.handler
 
+	def run(self):
+		while True:
+			request = self.queue.get()
+			self.handler(request)
+			self.queue.task_done()
+
 
 def main():
     try:
