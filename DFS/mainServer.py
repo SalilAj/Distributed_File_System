@@ -19,7 +19,6 @@ class TCPServer(object):
 			thread.start()
 
 	def testHandler(self):
-		print 'YESSSSSS'
 		return True
 
 	def listen(self):
@@ -45,10 +44,11 @@ class ThreadHandler(threading.Thread):
 			self.queue.task_done()
 
 	def handler(self, (connection, address)):
-		data = connection.recv(self.bufferLength)
-		if len(data) != 0 and len(data) < self.bufferLength:
-			if len(data) > 0:
-				print data
+		while True:
+			data = connection.recv(self.bufferLength)
+			if len(data) != 0 and len(data) < self.bufferLength:
+				if len(data) > 0:
+					print data
 		return
 
 
