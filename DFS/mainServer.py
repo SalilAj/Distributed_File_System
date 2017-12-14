@@ -55,6 +55,8 @@ class ThreadHandler(threading.Thread):
 				if len(data) > 0:
 					if data == 'hi':
 						self.server.hello(connection, address, data)
+					else:
+						self.messageHandler(connection, address, data)
 		return
 
 
