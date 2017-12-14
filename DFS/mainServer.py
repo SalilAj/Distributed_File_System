@@ -10,7 +10,7 @@ class TCPServer(object):
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.bind((self.host,port))
 
-		self.handler = self.testHandler
+		self.handler = handler
 		self.threadQueue = Queue.Queue(maxsize=15)
 
 		for i in xrange(15):
@@ -20,6 +20,10 @@ class TCPServer(object):
 
 	def testHandler(self):
 		return True
+
+	def hello(self, connection, address, message):
+		return_string = 'Hello World'
+		connection.sendall(return_string)
 
 	def listen(self):
 		self.sock.listen(5)
@@ -46,9 +50,11 @@ class ThreadHandler(threading.Thread):
 	def handler(self, (connection, address)):
 		while True:
 			data = connection.recv(self.bufferLength)
+			print(data)
 			if len(data) != 0 and len(data) < self.bufferLength:
 				if len(data) > 0:
-					print data
+					if data == 'hi':
+						self.server.hello(connection, address, data)
 		return
 
 
