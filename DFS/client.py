@@ -6,39 +6,33 @@ import os
 
 class DFSclient(object):
 
+	server = 'localhost'
 	rootLocation = os.getcwd()
 	fileFolder = "clientUpload"
 	fileLocation = os.path.join(rootLocation, fileFolder)
 
 	host = 'localhost'
-	def __init__(self, port=None, handler=None):
+
+	def __init__(self, port=None):
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.sock.bind((self.host,port))
+		self.threadQueue = Queue.Queue(maxsize=1)
 
-		self.handler = handler
-		self.threadQueue = Queue.Queue(maxsize=15)
+	def open(self, filename):
+		request = self.getDirectory(filename)
+		connection.sendall(return_string)
 
-		for i in xrange(15):
-			thread = ThreadHandler(self.threadQueue, 4096, self)
-			thread.setDaemon(True)
-			thread.start()
+	def getDirectory(self, filename):
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		sock.connect((self.server, 8002))
+		sock.sendall(filename)
+		while True:
+			data = sock.recv(4026)
+			returnData = data
+			print returnData
+			sock.close()
+			sock = None
+			return returnData
 
-    def open(self, filename):
-        file_downloaded = False
-        if filename not in self.open_files.keys():
-            # Get the info of the server hosting the file
-            request = self.__get_directory(filename)
-            if re.match(self.SERVER_RESPONSE, request):
-                params = request.splitlines()
-                server = params[0].split()[1]
-                port = int(params[1].split()[1])
-                open_file = params[2].split()[1]
-                # Get lock on file before downloading
-                self.__lock_file(filename, 10)
-                file_downloaded = self.__download_file(server, port, open_file)
-                if file_downloaded:
-                    self.open_files[filename] = open_file
-        return file_downloaded
 
 class ThreadHandler(threading.Thread):
 
@@ -67,18 +61,20 @@ class ThreadHandler(threading.Thread):
 						self.messageHandler(connection, address, data)
 		return
 
-
 def main():
 	path = os.path.join(DFSclient.fileLocation, "salil")
 	fileData = open(path, "rb").read()
-	connection = DFSclient(8000)
+	connection = DFSclient(8010)
 	print "Enter value"
 	inputValue = raw_input()
-	if inputValue == 'exit':
+	msg = inputValue.split(':')
+	if msg[0] == 'exit':
 		connection.close()
-	elif inputValue == 'upload':
-		connection.open(inputValue)
+	elif msg[0] == 'upload':
+		connection.open(msg[1])
 		connection.write(inputValue, fileData)
 		connection.close(inputValue)
+	elif msg[0] == 'download':
+		return False
 
 if __name__ == "__main__": main()

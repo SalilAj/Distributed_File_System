@@ -26,7 +26,7 @@ class DSSystem(TCPServer):
     def getServers(self, connection, address, message):
         request = message.splitlines()
         host, port = self.findServer(request[0])
-        returnString = "ONSERVER:\n%s\n%s" % (host, port)
+        returnString = 'HOST:%s,PORT:%s' % (host, port)
         return returnString
 
     def findServer(self, filename):
@@ -41,7 +41,7 @@ class DSSystem(TCPServer):
     
 def main():
     try:
-        server = DSSystem(8003)
+        server = DSSystem(8002)
         server.listen()
     except socket.error, errorMsg:
         print "Failed to create a socket" + str(errorMsg)

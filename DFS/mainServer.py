@@ -32,6 +32,15 @@ class TCPServer(object):
 			self.threadQueue.put((connection, address))
 			print("connected")
 
+	def sendRequest(self, server, port, message):
+		returnData = ""
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		sock.connect((server, port))
+		sock.sendall(message)
+		sock.close()
+		sock = None
+		return return_data
+
 class ThreadHandler(threading.Thread):
 
 	def __init__(self, threadQueue, bufferLength, server):
@@ -56,17 +65,16 @@ class ThreadHandler(threading.Thread):
 					if data == 'hi':
 						self.server.hello(connection, address, data)
 					else:
-						self.messageHandler(connection, address, data)
+						responce = self.messageHandler(connection, address, data)
+						connection.sendall(responce)
 		return
 
 
 def main():
     try:
-        server = TCPServer(8001)
+        server = TCPServer(8000)
         server.listen()
     except socket.error, errorMsg:
         print "Failed to create a socket" + str(errorMsg)
-
-
 
 if __name__ == "__main__": main()
